@@ -45,7 +45,7 @@ import {
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {merge, Subject, Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {SatCalendar} from './calendar';
+import {SatCalendar, SatCalendarSelectionScope} from './calendar';
 import {matDatepickerAnimations} from './datepicker-animations';
 import {createMissingDateImplError} from './datepicker-errors';
 import {SatCalendarCellCssClasses} from './calendar-body';
@@ -215,6 +215,9 @@ export class SatDatepicker<D> implements OnDestroy, CanColor {
 
   /** The view that the calendar should start in. */
   @Input() startView: 'month' | 'year' | 'multi-year' = 'month';
+
+  /** Specifies the level for date range selection. */
+  @Input() selectionScope: SatCalendarSelectionScope = 'day';
 
   /** Color palette to use on the datepicker's calendar. */
   @Input()

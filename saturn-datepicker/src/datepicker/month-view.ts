@@ -36,6 +36,7 @@ import {MAT_DATE_FORMATS, MatDateFormats} from '../datetime/date-formats';
 import {Directionality} from '@angular/cdk/bidi';
 import {SatCalendarBody, SatCalendarCell, SatCalendarCellCssClasses} from './calendar-body';
 import {createMissingDateImplError} from './datepicker-errors';
+import { SatCalendarSelectionScope } from './calendar';
 
 
 const DAYS_PER_WEEK = 7;
@@ -72,6 +73,9 @@ export class SatMonthView<D> implements AfterContentInit {
     this.updateRangeSpecificValues();
   }
   private _endDate: D | null;
+
+  /** Specifies the level for date range selection. */
+  @Input() selectionScope: SatCalendarSelectionScope = 'day';
 
   /** Allow selecting range of dates. */
   @Input() rangeMode = false;

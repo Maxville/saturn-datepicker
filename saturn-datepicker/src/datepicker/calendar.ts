@@ -48,6 +48,11 @@ import {MAT_DATE_FORMATS, MatDateFormats} from '../datetime/date-formats';
  */
 export type SatCalendarView = 'month' | 'year' | 'multi-year';
 
+/**
+ * Possible scope for date selection.
+ */
+export type SatCalendarSelectionScope = 'day' | 'month' | 'year';
+
 /** Default header for SatCalendar */
 @Component({
   moduleId: module.id,
@@ -229,6 +234,14 @@ export class SatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
     }
     private _endDate: D | null;
 
+    /** Specifies the level for date range selection. */
+    @Input() 
+    get selectionScope(): SatCalendarSelectionScope { return this._selectionScope; } 
+    set selectionScope(value: SatCalendarSelectionScope) {
+      this._selectionScope = value;
+    }
+    private _selectionScope: SatCalendarSelectionScope = 'day';
+
     /** Whenever datepicker is for selecting range of dates. */
     @Input() rangeMode = false;
 
@@ -390,7 +403,8 @@ export class SatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
     this.activeDate = this.startAt || this._dateAdapter.today();
 
     // Assign to the private property since we don't want to move focus on init.
-    this._currentView = this.startView;
+      this._validateStartView();
+      this._currentView = this.startView;
   }
 
   ngAfterViewChecked() {
@@ -459,13 +473,28 @@ export class SatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
     }
   }
 
+  /** Handles date selection in the month view. */
+  _daySelectedInMonthView(date: D): void {
+    if (this.selectionScope === 'day') {
+      this._dateSelected(date);
+    }
+  }
+
   /** Handles year selection in the multiyear view. */
   _yearSelectedInMultiYearView(normalizedYear: D) {
+    if (this.selectionScope === 'year') {
+      // TODO fix range limits
+      this._dateSelected(normalizedYear);
+    }
     this.yearSelected.emit(normalizedYear);
   }
 
   /** Handles month selection in the year view. */
   _monthSelectedInYearView(normalizedMonth: D) {
+    if (this.selectionScope === 'month') {
+      // TODO fix range limits
+      this._dateSelected(normalizedMonth);
+    }
     this.monthSelected.emit(normalizedMonth);
   }
 
@@ -475,8 +504,39 @@ export class SatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
 
   /** Handles year/month selection in the multi-year/year views. */
   _goToDateInView(date: D, view: 'month' | 'year' | 'multi-year'): void {
-    this.activeDate = date;
-    this.currentView = view;
+    if (this._isViewAllowed(view)) {
+      this.activeDate = date;
+      this.currentView = view;
+    }
+  }
+
+  /**
+   * Evaluates if the requested view is valid for the current
+   * configuration.
+   * 
+   * @param view Requested view
+   */
+  private _isViewAllowed(view: SatCalendarView) {
+    if (view === 'month') {
+      return this.selectionScope === 'day';
+    } else if (view === 'year') {
+      return this.selectionScope !== 'year';
+    }
+    return true;
+  }
+
+  /**
+   * Ensures that the view doesn't start in a nested
+   * view that should be inaccessible for the current
+   * selection scope.
+   */
+  private _validateStartView(): void {
+    const scope = this._selectionScope;
+    if (scope === 'month' && this.startView === 'month') {
+      this.startView = 'year';
+    } else if (scope === 'year') {
+      this.startView = 'multi-year'
+    }
   }
 
   /**

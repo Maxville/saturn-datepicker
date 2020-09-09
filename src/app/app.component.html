@@ -31,6 +31,38 @@
     </section>
     <hr>
     <section>
+        <h2>Range selection (Month)</h2>
+        <div>
+            <span class="code">rangeMode</span> option enables or disables range mode. Default is <span class="code">false</span>
+        </div>
+        <mat-form-field>
+            <input matInput
+                   placeholder="Choose a date"
+                   [satDatepicker]="monthRangePicker"
+                   formControlName="date">
+            <sat-datepicker #monthRangePicker [rangeMode]="true" selectionScope="month">
+            </sat-datepicker>
+            <sat-datepicker-toggle matSuffix [for]="monthRangePicker"></sat-datepicker-toggle>
+        </mat-form-field>
+    </section>
+    <hr>
+    <section>
+        <h2>Range selection (Year)</h2>
+        <div>
+            <span class="code">rangeMode</span> option enables or disables range mode. Default is <span class="code">false</span>
+        </div>
+        <mat-form-field>
+            <input matInput
+                   placeholder="Choose a date"
+                   [satDatepicker]="yearRangePicker"
+                   formControlName="date">
+            <sat-datepicker #yearRangePicker [rangeMode]="true" selectionScope="year">
+            </sat-datepicker>
+            <sat-datepicker-toggle matSuffix [for]="yearRangePicker"></sat-datepicker-toggle>
+        </mat-form-field>
+    </section>
+    <hr>
+    <section>
         <h2>Close after selection</h2>
         <div>
             <span class="code">closeAfterSelection</span> option enables or disables datepicker closing after date
